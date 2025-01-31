@@ -1,0 +1,65 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+         distribution: 'temurin'
+
+     - name: Set up Node.js
+       uses: actions/setup-node@v4
+       with:
+          node-version: '20'
+
+      - name: Build backend
+        working-directory: ./ecommerce-backend
+        run: mvn clean install
+
+      - name: Test backend
+        working-directory: ./ecommerce-backend
+        run: mvn test
+
+      - name: Build frontend
+        working-directory: ./ecommerce-frontend
+        run: npm install && npm run build
+
+      - name: Build Docker images
+        run: |
+          docker build -t backend-image ./ecommerce-backend
+          docker build -t frontend-image ./ecommerce-frontend
+
+      - name: Create Docker Compose file
+        run: |
+            echo "version: '3.8'
+            services:
+              backend:
+                image: backend-image
+                ports:
+                 - 8080:8080
+              frontend:
+                image: frontend-image
+                ports:
+                 - 3000:3000
+                depends_on:
+                    - backend
+            " > docker-compose.yml
+
+
+      - name: Run docker-compose
+          run: docker compose up -d
+
+      - name: Report Deploy
+          run: echo "Deploy successful"
