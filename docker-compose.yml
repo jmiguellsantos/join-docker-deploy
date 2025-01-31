@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: ecommercer_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+       - ecommerce-network
   backend:
     build:
       context: ./ecommerce-backend
@@ -41,8 +43,9 @@ services:
     environment:
       API_URL: http://backend:8080
     networks:
-      - ecommerce-network
+        - ecommerce-network
 networks:
   ecommerce-network:
+    driver: bridge
 volumes:
   postgres_data:
