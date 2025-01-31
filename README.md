@@ -9,3 +9,6 @@ Siga estes passos para executar a aplicação:
     *   Execute o comando `docker compose up -d` na raiz do projeto.
     *  O docker compose irá construir todas as imagens necessárias, baixar os containers, e fazer o deploy da aplicação.
 
+4.  **Acesse a Aplicação:**
+    *   Abra seu navegador e acesse o frontend em `http://localhost:3000`.
+
